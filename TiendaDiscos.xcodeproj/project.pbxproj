@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D46A19F91B5EE60E00581B5F /* TableViewControllerHistorial.m in Sources */ = {isa = PBXBuildFile; fileRef = D46A19F71B5EE60E00581B5F /* TableViewControllerHistorial.m */; };
+		D46A19FA1B5EE60E00581B5F /* TableViewControllerHistorial.xib in Resources */ = {isa = PBXBuildFile; fileRef = D46A19F81B5EE60E00581B5F /* TableViewControllerHistorial.xib */; };
 		D47D98B41B5D46D0005D4E92 /* ControllerRegistro.m in Sources */ = {isa = PBXBuildFile; fileRef = D47D98B31B5D46D0005D4E92 /* ControllerRegistro.m */; };
 		D47D98B61B5D535C005D4E92 /* libAFNetworking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47D98B51B5D535C005D4E92 /* libAFNetworking.a */; };
 		D47D98B81B5D5396005D4E92 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D47D98B71B5D5396005D4E92 /* libPods.a */; };
@@ -37,6 +39,9 @@
 /* Begin PBXFileReference section */
 		2FF827406001E5B1B44270B7 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C348FF247D463C1970FA43B3 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		D46A19F61B5EE60E00581B5F /* TableViewControllerHistorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewControllerHistorial.h; sourceTree = "<group>"; };
+		D46A19F71B5EE60E00581B5F /* TableViewControllerHistorial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewControllerHistorial.m; sourceTree = "<group>"; };
+		D46A19F81B5EE60E00581B5F /* TableViewControllerHistorial.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TableViewControllerHistorial.xib; sourceTree = "<group>"; };
 		D47D98B21B5D46D0005D4E92 /* ControllerRegistro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControllerRegistro.h; sourceTree = "<group>"; };
 		D47D98B31B5D46D0005D4E92 /* ControllerRegistro.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControllerRegistro.m; sourceTree = "<group>"; };
 		D47D98B51B5D535C005D4E92 /* libAFNetworking.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libAFNetworking.a; path = "Pods/../build/Debug-iphoneos/libAFNetworking.a"; sourceTree = "<group>"; };
@@ -136,6 +141,9 @@
 				D47D99081B5DA61B005D4E92 /* controllerGeneral.h */,
 				D47D99091B5DA61B005D4E92 /* controllerGeneral.m */,
 				D47D990A1B5DA61B005D4E92 /* controllerGeneral.xib */,
+				D46A19F61B5EE60E00581B5F /* TableViewControllerHistorial.h */,
+				D46A19F71B5EE60E00581B5F /* TableViewControllerHistorial.m */,
+				D46A19F81B5EE60E00581B5F /* TableViewControllerHistorial.xib */,
 			);
 			path = TiendaDiscos;
 			sourceTree = "<group>";
@@ -259,6 +267,7 @@
 			files = (
 				D4D4013B1B5D3D0700BEB84C /* Main.storyboard in Resources */,
 				D4D401401B5D3D0700BEB84C /* LaunchScreen.xib in Resources */,
+				D46A19FA1B5EE60E00581B5F /* TableViewControllerHistorial.xib in Resources */,
 				D47D990C1B5DA61B005D4E92 /* controllerGeneral.xib in Resources */,
 				D47D98C91B5D6D38005D4E92 /* TableViewControllerDiscos.xib in Resources */,
 				D4D4013D1B5D3D0700BEB84C /* Images.xcassets in Resources */,
@@ -319,6 +328,7 @@
 				D47D98C81B5D6D38005D4E92 /* TableViewControllerDiscos.m in Sources */,
 				D47D98B41B5D46D0005D4E92 /* ControllerRegistro.m in Sources */,
 				D4D401321B5D3D0700BEB84C /* main.m in Sources */,
+				D46A19F91B5EE60E00581B5F /* TableViewControllerHistorial.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

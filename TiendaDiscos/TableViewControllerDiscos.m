@@ -10,12 +10,13 @@
 #import "AFNetworking.h"
 #import "disco.h"
 #import "controllerGeneral.h"
+#import "TableViewControllerHistorial.h"
 
 
 @interface TableViewControllerDiscos ()
 
-@property (strong, nonatomic) NSDictionary *discosFromJson;
 @property (strong, nonatomic) NSMutableArray *discos;
+@property (strong, nonatomic) NSMutableArray *dHistorial;
 
 @end
 
@@ -23,10 +24,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self getCatalogo];
+    //[self getCatalogo];
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
-    self.discos = [NSMutableArray array];
+    self.dHistorial = [NSMutableArray array];
 
     
     // Uncomment the following line to preserve selection between presentations.
@@ -34,6 +35,16 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    self.discos = [NSMutableArray array];
+    [self getCatalogo];
+    
+    NSUserDefaults *nomUser = [NSUserDefaults standardUserDefaults];
+    NSString *nameUser = [nomUser objectForKey:@"user"];
+    [self getHistorial:nameUser];
+
 }
 
 - (void)didReceiveMemoryWarning {
@@ -45,23 +56,29 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 #warning Potentially incomplete method implementation.
-    // Return the number of sections.
+    
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 #warning Incomplete method implementation.
-    // Return the number of rows in the section.
+    
     return [self.discos count];
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
-    controllerGeneral *general =[[controllerGeneral alloc] initWithNibName:nil bundle:nil];
-    general.detallesDisco=[self.discos objectAtIndex:indexPath.row];
+    controllerGeneral *general =[[controllerGeneral alloc] initWithNibName:@"controllerGeneral" bundle:nil];
+    
+    Disco *disco = [self.discos objectAtIndex:indexPath.row];
+    NSLog(@"Aqui: %@",disco.nombre);
+    
+    general.detallesDisco=disco;
+    
     [self.navigationController pushViewController:general animated:YES];
     
 }
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     
@@ -76,10 +93,6 @@
     cell.textLabel.text = disco.artista;
     
     cell.detailTextLabel.text = disco.nombre;
-    
-    //NSLog(@"AAAAAAAAAAaA %@",[tempDictionary objectForKey:@"nombre"]);
-    
-    //cell.detailTextLabel.text = [NSString stringWithFormat:@"Not Rated"];
     
     
     return cell;
@@ -157,6 +170,7 @@
 
 -(void)getCatalogo{
     
+
     AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://pruebajava.hol.es/"]];
     [httpClient setParameterEncoding:AFFormURLParameterEncoding];
     NSMutableURLRequest *request = [httpClient requestWithMethod:@"POST"
@@ -191,9 +205,12 @@
         NSLog(@"DiscoAgregados: %ld",[self.discos count]);
         
         [self.tableView reloadData];
+        [self showMessage:@"Cargando catalogo" mensaje:@"Listo!"];
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"Error: %@", error);
+        
+        [self getCatalogo];
         
         
     }];
@@ -201,5 +218,70 @@
     
 }
 
+-(void)showMessage:(NSString *)titulo mensaje:(NSString *)msg{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:titulo
+                                                    message:msg
+                                                   delegate:nil
+                                          cancelButtonTitle:@"Ok"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
+
+- (IBAction)btnComprasRealizadas:(id)sender {
+    
+    TableViewControllerHistorial *historial =[[TableViewControllerHistorial alloc] initWithNibName:@"TableViewControllerHistorial" bundle:nil];
+
+    historial.historialDiscos=self.dHistorial;
+    [self showMessage:@"Espere" mensaje:@"Cargando su historial"];
+    
+    [self.navigationController pushViewController:historial animated:YES];
+}
+
+-(void)getHistorial:(NSString *)user{
+    
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://pruebajava.hol.es/"]];
+    [httpClient setParameterEncoding:AFFormURLParameterEncoding];
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"POST"
+                                                            path:@"http://pruebajava.hol.es/consultaVentas.php"
+                                                      parameters:@{@"usuario":user}];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        // Print the response body in text
+        NSLog(@"Response: %@", [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+        NSError *jsonError = nil;
+        
+        NSArray *jsonArray = (NSArray *)[NSJSONSerialization JSONObjectWithData:responseObject options:nil error:&jsonError];
+        
+        
+        for (NSDictionary *dic in jsonArray){
+            Disco *disc=[[Disco alloc] init];
+            
+            disc.iD=(NSString*)[dic valueForKey:@"id"];
+            disc.nombre=(NSString*)[dic valueForKey:@"nombre"];
+            disc.artista=(NSString*)[dic valueForKey:@"artista"];
+            disc.precio=(NSString*)[dic valueForKey:@"precio"];
+            //disc.imagen=(NSString*)[dic valueForKey:@"imagen"];
+            //disc.stock=(NSString*)[dic valueForKey:@"stock"];
+            
+            //self.discos=[NSArray arrayWithObject:disc];
+            [self.dHistorial addObject:disc];
+            //NSLog([dic valueForKey:@"nombre"]);
+            
+        }
+        
+        NSLog(@"DiscoHistorial: %ld",[self.dHistorial count]);
+        
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+        
+        
+        
+    }];
+    [operation start];
+    
+}
 
 @end

@@ -47,6 +47,11 @@
 -(void)consultaUsuario:(NSString *)user password:(NSString *)pass
 {
     
+    TableViewControllerDiscos *nextView = [[TableViewControllerDiscos alloc] initWithNibName:nil
+                                                                                      bundle:nil];
+    NSUserDefaults *admin = [NSUserDefaults standardUserDefaults];
+    NSUserDefaults *nomUser = [NSUserDefaults standardUserDefaults];
+    
     AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://pruebajava.hol.es/"]];
     [httpClient setParameterEncoding:AFFormURLParameterEncoding];
     NSMutableURLRequest *request = [httpClient requestWithMethod:@"POST"
@@ -60,13 +65,20 @@
         
         if([[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] isEqualToString:@"SI"]){
             
-            TableViewControllerDiscos *nextView = [[TableViewControllerDiscos alloc] initWithNibName:nil
-                                                                                              bundle:nil];
+            [admin setInteger:1 forKey:@"admin"];
+            [nomUser setObject:user forKey:@"user"]; //GUARDO USUARIO PARA RECUPERLO EN LA TABLA_VENTA
+            [self.navigationController pushViewController:nextView animated:YES];
+            NSLog(@"Entra user");
             
-            [self.navigationController pushViewController:nextView
-                                                 animated:YES];
             
-            
+        }else{
+            if([[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] isEqualToString:@"admin"]){
+                
+                [admin setInteger:0 forKey:@"admin"];
+                [self.navigationController pushViewController:nextView
+                                                     animated:YES];
+                NSLog(@"Entra admin");
+            }
         }
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {

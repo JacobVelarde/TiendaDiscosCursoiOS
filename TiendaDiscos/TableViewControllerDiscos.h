@@ -12,4 +12,7 @@
 
 @property (strong, nonatomic) IBOutlet UITableView *tableDiscos;
 
+- (IBAction)btnComprasRealizadas:(id)sender;
+
+
 @end
