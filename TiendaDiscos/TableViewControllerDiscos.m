@@ -24,17 +24,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    //[self getCatalogo];
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     self.dHistorial = [NSMutableArray array];
-
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -44,24 +36,21 @@
     NSUserDefaults *nomUser = [NSUserDefaults standardUserDefaults];
     NSString *nameUser = [nomUser objectForKey:@"user"];
     [self getHistorial:nameUser];
-
+    
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-#warning Potentially incomplete method implementation.
     
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-#warning Incomplete method implementation.
     
     return [self.discos count];
 }
@@ -88,7 +77,7 @@
     }
     
     Disco *disco = [self.discos objectAtIndex:indexPath.row];
-
+    
     
     cell.textLabel.text = disco.artista;
     
@@ -98,79 +87,70 @@
     return cell;
 }
 
-/*
- - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
- UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
- 
- // Configure the cell...
- 
- return cell;
- }
- */
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        
+        if(![self verificaUsuario]){
+            
+            Disco *disco = [self.discos objectAtIndex:indexPath.row];
+            [self eliminaDisco:disco.iD];
+            [self.discos removeObjectAtIndex:indexPath.row];
+            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        }
+        
+    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
+        
+    }
+}
 
-/*
- // Override to support conditional editing of the table view.
- - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
- // Return NO if you do not want the specified item to be editable.
- return YES;
- }
- */
+-(void)eliminaDisco:(NSString *)ID{
+    
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://pruebajava.hol.es/"]];
+    [httpClient setParameterEncoding:AFFormURLParameterEncoding];
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"POST"
+                                                            path:@"http://pruebajava.hol.es/eliminaDisco.php"
+                                                      parameters:@{@"id":ID}];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        // Print the response body in text
+        NSLog(@"Response: %@", [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+        
+        if([[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] isEqualToString:@"OK"]){
+            
+            [self showMessage:@"Disco" mensaje:@"Disco eliminado"];
+        }
+        
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error: %@", error);
+        
+        
+        
+    }];
+    [operation start];
+    
+}
 
-/*
- // Override to support editing the table view.
- - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
- if (editingStyle == UITableViewCellEditingStyleDelete) {
- // Delete the row from the data source
- [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
- } else if (editingStyle == UITableViewCellEditingStyleInsert) {
- // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
- }
- }
- */
 
-/*
- // Override to support rearranging the table view.
- - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
- }
- */
+-(BOOL)verificaUsuario{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    long user=[[defaults objectForKey:@"admin"] longValue];
+    
+    if(user==1){
+        [self showMessage:@"Admin" mensaje:@"Entre como administrador"];
+        return true;
+        
+    }else{
+        return false;
+    }
+    
+}
 
-/*
- // Override to support conditional rearranging of the table view.
- - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
- // Return NO if you do not want the item to be re-orderable.
- return YES;
- }
- */
-
-/*
- #pragma mark - Table view delegate
- 
- // In a xib-based application, navigation from a table can be handled in -tableView:didSelectRowAtIndexPath:
- - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
- // Navigation logic may go here, for example:
- // Create the next view controller.
- <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:<#@"Nib name"#> bundle:nil];
- 
- // Pass the selected object to the new view controller.
- 
- // Push the view controller.
- [self.navigationController pushViewController:detailViewController animated:YES];
- }
- */
-
-/*
- #pragma mark - Navigation
- 
- // In a storyboard-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- */
 
 -(void)getCatalogo{
     
-
+    
     AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://pruebajava.hol.es/"]];
     [httpClient setParameterEncoding:AFFormURLParameterEncoding];
     NSMutableURLRequest *request = [httpClient requestWithMethod:@"POST"
@@ -231,7 +211,7 @@
 - (IBAction)btnComprasRealizadas:(id)sender {
     
     TableViewControllerHistorial *historial =[[TableViewControllerHistorial alloc] initWithNibName:@"TableViewControllerHistorial" bundle:nil];
-
+    
     historial.historialDiscos=self.dHistorial;
     [self showMessage:@"Espere" mensaje:@"Cargando su historial"];
     
